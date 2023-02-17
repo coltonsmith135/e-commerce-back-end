@@ -17,10 +17,10 @@ router.get('/', (req, res) => {
 });
 
 // get one product
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   // find a single product by its `id`
   // be sure to include its associated Category and Tag data
-  try{
+  try {
     const productData = await Product.findByPk(req.params.id, {
       include: [{model: Category}, {model: Tag}]
     })
@@ -36,26 +36,9 @@ router.get('/:id', (req, res) => {
 });
 
 // create new product
-router.post('/', (req, res) => {
-  try {
-    const productData = await Product.create({
-      product_name: 'Baseball',
-      price: 100.00,
-      stock: 3,
-      tagIds: [1,2,3]
-    })
-    res.status(200).json(productData);
-  } catch (err) {
-    res.status(400).json(err)
-  }
-  /* req.body should look like this...
-    {
-      product_name: "Basketball",
-      price: 200.00,
-      stock: 3,
-      tagIds: [1, 2, 3, 4]
-    }
-  */
+router.post('/', async (req, res) => {
+ 
+  
   Product.create(req.body)
     .then((product) => {
       // if there's product tags, we need to create pairings to bulk create in the ProductTag model
@@ -75,7 +58,7 @@ router.post('/', (req, res) => {
     .catch((err) => {
       console.log(err);
       res.status(400).json(err);
-    });
+    }) 
 });
 
 // update product
@@ -122,6 +105,12 @@ router.put('/:id', (req, res) => {
 
 router.delete('/:id', (req, res) => {
   // delete one product by its `id` value
-});
+  Product.destroy({where: {id: req.params.id}}).then((data) => {
+    res.json(data)
+  })
+  .catch((err) => {
+  res.status(400).json(err)
+}) 
+})
 
 module.exports = router;

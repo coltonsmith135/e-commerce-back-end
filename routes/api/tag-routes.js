@@ -6,8 +6,9 @@ const { Tag, Product, ProductTag } = require('../../models');
 router.get('/', (req, res) => {
   // find all tags
   // be sure to include its associated Product data
+  console.log(ProductTag)
   Tag.findAll({
-    include: [ProductTag],
+    include: [{model: Product, through: ProductTag}],
   }).then((tagData) => {
     res.json(tagData)
   }).catch((err) => {
@@ -40,6 +41,10 @@ router.put('/:id', (req, res) => {
     where: {
       id: req.params.id,
     },
+  }).then((updatedTag) => {
+    res.json(updatedTag)
+  }).catch((err) => {
+    res.status(400).json(err)
   })
 });
 
